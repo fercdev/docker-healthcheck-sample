@@ -1,0 +1,15 @@
+FROM node:18-alpine
+
+RUN apk add --no-cache curl
+
+WORKDIR /app
+
+COPY index.js package.json ./
+
+RUN npm ci --only=production || npm i --production
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=3 CMD curl -fS http://localhost:3000/healthy || exit 1
+
+CMD [ "node", "index.js" ]
